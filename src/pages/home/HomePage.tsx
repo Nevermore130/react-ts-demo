@@ -1,62 +1,68 @@
 import {withTranslation, WithTranslation} from 'react-i18next'
 import React from "react";
-import {Carousel, HeaderClass, ProductCollection, SideMenu} from "../../components";
+import {Carousel, Header, ProductCollection, SideMenu} from "../../components";
 import styles from './HomePage.module.css'
 import {Col, Row, Spin, Typography} from "antd";
 import sideImage from "../../assets/images/sider_2019_12-09.png";
 import sideImage2 from "../../assets/images/sider_2019_02-04.png";
 import sideImage3 from "../../assets/images/sider_2019_02-04-2.png";
-import axios from "axios";
+import {RootState} from "../../redux/store";
+import {giveMeDataActionCreator} from "../../redux/recommendProducts/recommendProductsActions";
+import {connect} from "react-redux";
 
 
-interface StateProps {
-    loading: boolean,
-    productList: any[],
-    error: string | null
+const mapStateToProps = (state: RootState) => {
+    return {
+        loading: state.recommendProducts.loading,
+        error: state.recommendProducts.error,
+        productList: state.recommendProducts.productList
+    }
 }
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        giveMedata: () => {
+            dispatch(giveMeDataActionCreator())
+        }
+    }
+}
+
+type PropsType = WithTranslation & ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>
+
 
 /**
  * WithTranslation 国际化对象传递过来的props
  */
-class HomePageComponent extends React.Component<WithTranslation, StateProps> {
-
-    constructor(props: WithTranslation) {
-        super(props);
-        this.state = {
-            loading: true,
-            error: null,
-            productList: []
-        }
-    }
+class HomePageComponent extends React.Component<PropsType> {
 
 
     async componentDidMount() {
-        try {
-            const {data} = await axios.get('http://82.157.43.234:8080/api/productCollections', {
-                headers: {
-                    "x-icode": "6FE3D0FC0E643CAB"
-                }
-            })
-            this.setState({
-                loading: false,
-                productList: data,
-                error: null
-            })
-        } catch (e) {
-            if (e instanceof Error) {
-                this.setState({
-                    loading: false,
-                    error: e.message
-                })
-            }
-        }
+        // try {
+        //     const {data} = await axios.get('http://82.157.43.234:8080/api/productCollections', {
+        //         headers: {
+        //             "x-icode": "6FE3D0FC0E643CAB"
+        //         }
+        //     })
+        //     this.setState({
+        //         loading: false,
+        //         productList: data,
+        //         error: null
+        //     })
+        // } catch (e) {
+        //     if (e instanceof Error) {
+        //         this.setState({
+        //             loading: false,
+        //             error: e.message
+        //         })
+        //     }
+        // }
+        this.props.giveMedata()
     }
 
 
     render(): React.ReactNode {
-        const {t} = this.props
-        const {productList, loading, error} = this.state
-
+        const {t, productList, loading, error} = this.props
         if (loading) {
             return (<Spin size={"large"} style={{
                 marginTop: 20,
@@ -73,7 +79,7 @@ class HomePageComponent extends React.Component<WithTranslation, StateProps> {
 
         return (
             <>
-                <HeaderClass/>
+                <Header/>
                 {/*页面内容 content*/}
                 <div className={styles['page-content']}>
                     <Row style={{marginTop: 20}}>
@@ -117,4 +123,4 @@ class HomePageComponent extends React.Component<WithTranslation, StateProps> {
 }
 
 
-export const HomePage = withTranslation()(HomePageComponent)
+export const HomePage = connect(mapStateToProps, mapDispatchToProps)(withTranslation()(HomePageComponent))

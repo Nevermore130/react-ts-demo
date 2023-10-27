@@ -1,15 +1,16 @@
 import React from 'react';
 import styles from './App.module.css';
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import {HomePage} from "./pages";
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import {HomePage, DetailPage} from "./pages";
 
 function App() {
     return (
         <div className={styles.App}>
             <BrowserRouter>
-                <Routes>
-                    <Route path={'/'} element={<HomePage/>}></Route>
-                </Routes>
+                <Switch>
+                    <Route exact path={'/'} component={HomePage}/>
+                    <Route path={"/detail/:touristRouteId"} component={DetailPage}></Route>
+                </Switch>
             </BrowserRouter>
         </div>
 

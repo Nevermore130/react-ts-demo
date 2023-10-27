@@ -3,7 +3,6 @@ import {Typography, Dropdown, Menu, Button, Layout, Input} from "antd";
 import {GlobalOutlined} from "@ant-design/icons";
 import logo from "../../assets/logo.svg"
 import React from "react";
-import {RouteComponentProps, withRouter} from "../../helpers/withRouter";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {LanguageState} from "../../redux/language/languageReducer";
 import store, {RootState} from "../../redux/store";
@@ -12,13 +11,14 @@ import {addLanguageActionCreator, changeLanguageActionCreator} from "../../redux
 //通过connect函数把store的state和dispatch方法与组件连接起来
 import {connect} from 'react-redux'
 import {Dispatch} from "redux";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 
 interface State extends LanguageState {
 }
 
 const mapStateToProps = (state: RootState) => ({
-    language: state.language,
-    languageList: state.languageList
+    language: state.language.language,
+    languageList: state.language.languageList
 })
 
 type PropsType = RouteComponentProps // react-router 路由props类型
@@ -60,7 +60,7 @@ class HeaderComponent extends React.Component<PropsType> {
     }
 
     render(): React.ReactNode {
-        const {navigate, t} = this.props
+        const { t} = this.props
         return (
             <div className={styles['app-header']}>
                 {/*top-header*/}
@@ -118,5 +118,5 @@ class HeaderComponent extends React.Component<PropsType> {
     }
 }
 
-export const HeaderClass = connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(HeaderComponent)))
+export const Header = connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(HeaderComponent)))
 
